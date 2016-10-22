@@ -14,6 +14,12 @@ extension Array {
     }
 }
 
+extension String {
+    func appending(pathComponent: String) -> String {
+        return (self as NSString).appendingPathComponent(pathComponent)
+    }
+}
+
 func launch(_ launchPath: String, with args: [String]? = nil, from directoryPath: String? = nil) -> Process {
     let process = Process()
     process.launchPath = launchPath

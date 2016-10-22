@@ -10,16 +10,16 @@ import Foundation
 
 let manager = FileManager.default
 
-let workingDirectoryPath = manager.urls(for: .desktopDirectory, in: .userDomainMask).first!.path + "/"
-let debugBuildPath = "/.build/debug/"
-let sourcePath = "/Sources/"
+let workingDirectoryPath = manager.urls(for: .desktopDirectory, in: .userDomainMask).first!.path
+let debugBuildPath = ".build/debug/"
+let sourcePath = "Sources/"
 let defaultSourceFileName = "main.swift"
 let defaultProjectName = "Hello"
 
 func getProjectName() -> String {
     var result = defaultProjectName
     var i = 0
-    while manager.fileExists(atPath: workingDirectoryPath + result) {
+    while manager.fileExists(atPath: workingDirectoryPath.appending(pathComponent: result)) {
         i += 1
         result = defaultProjectName + String(i)
     }
@@ -28,7 +28,7 @@ func getProjectName() -> String {
 }
 
 let projectName = getProjectName()
-let projectDirectoryPath = workingDirectoryPath + projectName
+let projectDirectoryPath = workingDirectoryPath.appending(pathComponent: projectName)
 
 do {
     print("Creating package directory...")
@@ -43,7 +43,7 @@ launch("/usr/bin/swift", with: ["package", "init", "--type", "executable"], from
 do {
     print("Writing program source...")
     
-    try "let name = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : \"world\"\nprint(\"Hello, \\(name)!\")".write(toFile: projectDirectoryPath + sourcePath + defaultSourceFileName, atomically: false, encoding: String.Encoding.utf8)
+    try "let name = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : \"world\"\nprint(\"Hello, \\(name)!\")".write(toFile: projectDirectoryPath.appending(pathComponent: sourcePath).appending(pathComponent: defaultSourceFileName), atomically: false, encoding: String.Encoding.utf8)
 } catch {
     print(error.localizedDescription)
     exit(1)
@@ -51,7 +51,7 @@ do {
 
 launch("/usr/bin/swift", with: ["build"], from: projectDirectoryPath).waitUntilExit()
 
-let debugExecutablePath = projectDirectoryPath + debugBuildPath + projectName
+let debugExecutablePath = projectDirectoryPath.appending(pathComponent: debugBuildPath).appending(pathComponent: projectName)
 let args: [String]? = CommandLine.arguments.count > 1 ? CommandLine.arguments.removingFirst : nil
 print("Running program: \(projectName), with arguments: \((args ?? []).description))")
 launch(debugExecutablePath, with: args).waitUntilExit()
