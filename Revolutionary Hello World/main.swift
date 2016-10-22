@@ -10,7 +10,7 @@ import Foundation
 
 let manager = FileManager.default
 
-let workingDirectoryPath = manager.urls(for: .desktopDirectory, in: .userDomainMask).first!.path
+let workingDirectoryPath = manager.urls(for: .cachesDirectory, in: .userDomainMask).first!.path.appending(pathComponent: "Revolutionary Hello World")
 let debugBuildPath = ".build/debug/"
 let sourcePath = "Sources/"
 let defaultSourceFileName = "main.swift"
@@ -32,7 +32,7 @@ let projectDirectoryPath = workingDirectoryPath.appending(pathComponent: project
 
 do {
     print("Creating package directory...")
-    try FileManager.default.createDirectory(atPath: projectDirectoryPath, withIntermediateDirectories: false, attributes: nil)
+    try FileManager.default.createDirectory(atPath: projectDirectoryPath, withIntermediateDirectories: true, attributes: nil)
 } catch {
     print(error.localizedDescription)
     exit(100)
