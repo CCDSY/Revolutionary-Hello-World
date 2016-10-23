@@ -18,6 +18,10 @@ extension String {
     func appending(pathComponent: String) -> String {
         return (self as NSString).appendingPathComponent(pathComponent)
     }
+    
+    func appending(pathExtension: String) -> String? {
+        return (self as NSString).appendingPathExtension(pathExtension)
+    }
 }
 
 func launch(_ launchPath: String, with args: [String]? = nil, from directoryPath: String? = nil) -> Process {
