@@ -11,23 +11,30 @@ import Foundation
 let manager = FileManager.default
 
 let workingDirectoryPath = manager.urls(for: .cachesDirectory, in: .userDomainMask).first!.path.appending(pathComponent: "Revolutionary Hello World")
-let defaultSourceFileName = "hello"
-let swiftSourceExtension = "swift"
 
-func getSourceFileName() -> String {
-    var result = defaultSourceFileName
-    var i = 0
-    while manager.fileExists(atPath: workingDirectoryPath.appending(pathComponent: result)) {
-        i += 1
-        result = defaultSourceFileName + String(i)
+if !manager.fileExists(atPath: workingDirectoryPath) {
+    do {
+        try manager.createDirectory(atPath: workingDirectoryPath, withIntermediateDirectories: true, attributes: nil)
+    } catch {
+        print(error.localizedDescription)
+        exit(100)
     }
-    
-    return result
+} else {
+    do {
+        let contents = try manager.contentsOfDirectory(atPath: workingDirectoryPath)
+        for file in contents {
+            try manager.removeItem(atPath: file)
+        }
+    } catch {
+        print(error.localizedDescription)
+        exit(100)
+    }
 }
 
-let sourceFileName = getSourceFileName()
-let sourceFilePath = workingDirectoryPath.appending(pathComponent: sourceFileName.appending(pathExtension: swiftSourceExtension)!)
-let executableFilePath = workingDirectoryPath.appending(pathComponent: sourceFileName)
+let swiftSourceExtension = "swift"
+let programName = "hello"
+let sourceFilePath = workingDirectoryPath.appending(pathComponent: programName.appending(pathExtension: swiftSourceExtension)!)
+let executableFilePath = workingDirectoryPath.appending(pathComponent: programName)
 
 do {
     print("Writing program source...")
@@ -41,5 +48,5 @@ do {
 launch("/usr/bin/xcrun", with: ["-sdk", "macosx", "swiftc", sourceFilePath, "-o", executableFilePath], from: workingDirectoryPath).waitUntilExit()
 
 let args: [String]? = CommandLine.arguments.count > 1 ? CommandLine.arguments.removingFirst : nil
-print("Running program: \(sourceFileName), with arguments: \((args ?? []).description))")
+print("Running program: \(programName), with arguments: \((args ?? []).description))")
 launch(executableFilePath, with: args).waitUntilExit()
