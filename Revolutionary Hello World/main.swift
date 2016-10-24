@@ -10,7 +10,14 @@ import Foundation
 
 let manager = FileManager.default
 
-let workingDirectoryPath = manager.urls(for: .cachesDirectory, in: .userDomainMask).first!.path.appending(pathComponent: "Revolutionary Hello World")
+var workingDirectoryPath = manager.urls(for: .cachesDirectory, in: .userDomainMask).first!.path.appending(pathComponent: "Revolutionary Hello World")
+if CommandLine.arguments.count > 1 {
+    let workingDirectoryCandidateUrl = URL(fileURLWithPath: CommandLine.arguments[1])
+    let workingDirectoryCandidatePath = workingDirectoryCandidateUrl.path
+    if workingDirectoryCandidateUrl.hasDirectoryPath || !manager.fileExists(atPath: workingDirectoryCandidatePath) {
+        workingDirectoryPath = workingDirectoryCandidatePath
+    }
+}
 
 let swiftSourceExtension = "swift"
 let programName = "hello"
@@ -40,7 +47,7 @@ do {
 
 launch("/usr/bin/xcrun", with: ["-sdk", "macosx", "swiftc", sourceFilePath, "-o", executableFilePath], from: workingDirectoryPath).waitUntilExit()
 
-let args: [String]? = CommandLine.arguments.count > 1 ? CommandLine.arguments.removingFirst : nil
+let args: [String]? = CommandLine.arguments.count > 2 ? CommandLine.arguments.removingFirst(2) : nil
 print("Running program: \(programName), with arguments: \((args ?? []).description))")
 launch(executableFilePath, with: args).waitUntilExit()
 

@@ -12,6 +12,10 @@ extension Array {
     var removingFirst: [Element] {
         return Array(self[1 ..< count])
     }
+    
+    func removingFirst(_ n: Int) -> [Element] {
+        return Array(self[n ..< count])
+    }
 }
 
 extension String {
